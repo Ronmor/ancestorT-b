@@ -35,6 +35,7 @@ public:
     node* getSon();
     void deleteMother();
     void deleteFather();
+    bool thisIs_myName(const std::string&);
     
     //Methods
     node* addMother(const std::string &mother_name);
@@ -67,6 +68,7 @@ private:
     const std::string& find2GensOfRoot(const std::string &relation);
     int countFreq(const std::string& pat, const std::string& txt);
     const std::string candidate(bool sex,const int& wanted_level,node* cand);
+    void safe_remove(const std::string&,node*);
 public:
     Tree(const std::string &head);
     //~Tree();
@@ -77,6 +79,10 @@ public:
     const std::string relation(const std::string& family_member);
     void display();
     int countTreeLevel(node* countFromHere,int counter);
+    const std::string& getRoot();
+    node* getRootByNode();
+    node* binSearch(const std::string&,node*);
+    
 
 };
 

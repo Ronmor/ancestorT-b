@@ -34,9 +34,8 @@ void Tree::remove_node(node* ptr)
 {
     //cout << "inside remove_node with " << ptr -> getName() << endl;
     if (ptr != NULL)
-    {
-        //cout << ptr ->getName() << endl;  
-        cout << "removed" << ptr -> getName() << endl;
+    {  
+    //    cout << "removed" << ptr -> getName() << endl;
         delete ptr;
         return;
     }
@@ -46,19 +45,88 @@ void Tree::remove_node(node* ptr)
 
 Tree& Tree::addFather(const string &son, const string &father)
 {
-    node* decendant = search(son, _root);
-    if (decendant == NULL)
+    if ( getRootByNode() -> getFather() == NULL && getRoot() == son)
+    {
+        _root->addFather(father);
+     //   cout <<  getRoot() << "   THIS IS THE ROOT SO IT SHOULD HAPPEN ONLY ONCE , father as of now : "  << getRootByNode() -> _father ->getName() << endl;
+        return *this;
+    }
+    node* decendant1;
+    node* decendant2;
+    decendant1 = getRootByNode()->getFather() != NULL ?  binSearch(son, _root->getFather()) : NULL ;
+    decendant2 = getRootByNode()->getMother() != NULL ?  binSearch(son, _root->getMother()) : NULL ;
+    cout << decendant1->getName() << "," << decendant2->getName() << endl;
+    if (decendant1 == NULL  && decendant2 == NULL)
+    {
+        throw string("DNF");
+    }
+    else if (( decendant2 -> getName() == son && decendant2->getFather() != NULL) || ( decendant1 -> getName() == son && decendant1->getFather() != NULL) )
+    {
+        throw string("has father");
+    }
+    
+    
+   // if (decendant1->getName() == decendant2->getName() && (decendant2->getFather() == NULL  || decendant1->getFather() == NULL ) )
+   else
+    {
+        if (decendant2->_name == son && decendant2->getFather() == NULL)
+        {
+        decendant2->addFather(father);
+       // cout <<  decendant2->getName() << " , father as of now : "  << decendant2 -> _father ->getName() << endl;
+        return *this;
+        }
+        if (decendant2->_name == son && decendant2->getFather() != NULL)
+        {
+            throw invalid_argument(" error");
+        }
+        
+        
+        else if(decendant1 -> getName() == son)
+        {
+       //     cout << "    ***********************************************************                                                                          " << decendant1 -> getName() << endl;
+            if (decendant1 -> getFather() == NULL)
+        {
+        decendant1->addFather(father);
+      //  cout <<  decendant1->getName() << " , father as of now : "  << decendant1 -> _father ->getName() << endl;
+        return *this;
+        }
+        //else throw has a father
+        }
+        else if(decendant2 -> getName() == son)
+        {
+        if (decendant2 -> getFather() != NULL)
+        {
+        decendant2->addFather(father);
+       // cout <<  decendant2->getName() << " , father as of now : "  << decendant2 -> _father ->getName() << endl;
+        }
+        //else throw has a father
+        return *this;
+        }
+    }
+
+    if (decendant1 == NULL && decendant2 == NULL)
     {
         throw invalid_argument("an error has occured !  " +son +" is not a part of this family !");
     }
-    else if (decendant != NULL && decendant -> getFather() != NULL)
+    else if ( (decendant1 != NULL && decendant1 -> getMother() != NULL)  && ( decendant2 != NULL && decendant2 -> getMother() != NULL))
     {
         throw invalid_argument("an error has occured !  " +son +" already has a father !");
     }
-    try{
-    decendant -> addFather(father);
-    //cout <<  decendant -> getName() << " , "  << decendant -> _father ->getName() << endl;
-    } catch (const exception& e) {
+    try
+    {
+    if (decendant1 != NULL)
+     {
+     decendant1 -> addFather(father);
+    // cout <<  decendant1 -> getName() << " , father as of now : "  << decendant1 -> getFather() ->getName() << endl;
+     return *this;
+
+    }
+    else if (decendant2 != NULL)
+    {
+        decendant2 -> addFather(father);
+      //  cout <<  decendant2 -> getName() << " , father as of now : "  << decendant1 -> getFather() ->getName() << endl;
+    }
+     }catch (const exception& e) {
         cout << e.what() << endl;
     }
     return *this;
@@ -66,47 +134,165 @@ Tree& Tree::addFather(const string &son, const string &father)
 
 Tree& Tree::addMother(const string &son, const string &mother)
 {
-    node* decendant = search(son, _root);
-    if (decendant == NULL)
+    if ( getRootByNode() -> getMother() == NULL && getRoot() == son)
+    {
+        _root->addMother(mother);
+        //cout << " THIS IS THE ROOT SO IT SHOULD HAPPEN ONLY ONCE , moterther as of now :   " << getRootByNode()->getMother()->getName() << endl;
+        return *this;
+    }
+    node* decendant1;
+    node* decendant2;
+    decendant1 = getRootByNode()->getMother() != NULL ?  binSearch(son, _root->getMother()) : NULL ;
+    decendant2 = getRootByNode()->getFather() != NULL ?  binSearch(son, _root->getFather()) : NULL ;
+    cout << decendant1->getName() << "," << decendant2->getName() << endl;
+    if (decendant1 == NULL  && decendant2 == NULL)
+    {
+        throw string("DNF");
+    }
+    else if (( decendant2 -> getName() == son && decendant2->getMother() != NULL) || ( decendant1 -> getName() == son && decendant1->getMother() != NULL) )
+    {
+        throw string("has mother");
+    }
+    else
+    {
+        if (decendant2->_name == son)
+        {
+        decendant2->addMother(mother);
+       // cout <<  decendant2->getName() << ", mother as of now : "  << decendant2 -> _mother ->getName() << endl;
+        }
+        else
+        {
+        decendant1->addMother(mother);
+       // cout <<  decendant1->getName() << " , mother as of now : "  << decendant1 -> _mother ->getName() << endl;
+        }
+        return *this;
+    }
+    if (decendant1 == NULL && decendant2 == NULL)
     {
         throw invalid_argument("an error has occured !  " +son +" is not a part of this family !");
     }
-    else if (decendant != NULL && decendant -> getMother() != NULL)
+    else if ( (decendant1 != NULL && decendant1 -> getMother() != NULL)  && ( decendant2 != NULL && decendant2 -> getMother() != NULL))
     {
         throw invalid_argument("an error has occured !  " +son +" already has a mother !");
     }
     try{
-    decendant -> addMother(mother);
-   // cout <<  decendant -> getName() << " , "  << decendant -> _mother ->getName() << endl;
+    if (decendant1 != NULL) {
+     decendant1 -> addMother(mother);
+        // cout <<  decendant1 -> getName() << " , mother as of now : "  << decendant1 -> getMother() ->getName() << endl;
+         return *this;
+    }
+    else if (decendant2 != NULL)
+    {
+        decendant2 -> addMother(mother);
+      //  cout <<  decendant2 -> getName() << " , mother as of now : "  << decendant1 -> getMother() ->getName() << endl;
+        return *this;
+    }
+        
     } catch (const exception& e) {
         cout << e.what() << endl;
     }
     return *this;
 }
 
+node* Tree::binSearch(const std::string& name_to_search , node* current){
+
+if (current->thisIs_myName(name_to_search))
+{
+cout << " binsearch returns now with current node =" << current->getName() << endl;
+    return current;
+}
+if (current->getMother() != NULL) { return binSearch(name_to_search,current->getMother()); }
+if (current->getFather() != NULL) { return binSearch(name_to_search,current->getFather()); }
+else return search(name_to_search,current->getSon());
+}
+bool node::thisIs_myName(const string& search_name){
+    if (this->getName() == search_name)
+    {
+        return true;
+    } 
+    return false;
+    }
+
 const string Tree::relation(const string& family_member)
 {
-    //cout << "succesfully entered relation function " << endl;
     if (_root -> getName() == family_member)
     {
         return "me";
     }
+    /*
+    if (getRootByNode()->getMother()->getName() == family_member && getRootByNode()->getMother() != NULL)
+    {
+        return "mother";
+    }
+    if (getRootByNode()->getFather()->getName() == family_member && getRootByNode()->getFather() != NULL )
+    {
+        return "father";
+    }
+    */
     else
     {
-        node* ancestor = search(family_member, _root);
-        //cout << "search succesfully returned " << endl;
+        node* ancestor = binSearch(family_member, getRootByNode() ->getMother());
+        node* ancestor1 = search(family_member, getRootByNode() -> getMother() ) ;
+        node* ancestor2 = binSearch(family_member, getRootByNode() ->getFather() );
+        node* ancestor3 = search(family_member, getRootByNode() -> getFather() );
         if (ancestor == NULL)
         {
             return "unrelated" ;
         }
         else
         {
+            cout << "im getting tired from you both.  Search =  moter = " <<ancestor1->getName()     <<   ",         search     =    father    "  << ancestor3->getName()   << endl;
+            cout << "im getting tired from you both.  binSearch =  mother = " <<ancestor->getName()     <<   ",         binSearch     =    father    "  << ancestor2->getName()   << endl;
             int counter;
-            //cout << " Attempting counting " << endl;
-            counter = countTreeLevel(ancestor,0);
-            //cout << " counted succesfully, counter = " << counter << endl;
-            const string& sex = ancestor -> whatIsMySex() ? "mother" : "father" ;
-    //cout << " levels = " << counter << endl;
+            bool suffix = true;
+            if (ancestor->getSon()->getMother()->getName() == family_member)
+            {
+              counter = counter = countTreeLevel(ancestor,0);
+              suffix = ancestor->getSon()-> getMother() ->whatIsMySex();
+            }
+            else if (ancestor->getSon()->getFather()->getName() == family_member)
+            {
+              counter = counter = countTreeLevel(ancestor,0);
+              suffix = ancestor->getSon()->getFather()->whatIsMySex();
+            }
+            else if (ancestor2->getSon()->getMother()->getName() == family_member)
+            {
+               counter = countTreeLevel(ancestor2,0);
+               suffix = ancestor2->getSon()-> getMother() ->whatIsMySex();
+            }
+            else if (ancestor2->getSon()->getFather()->getName() == family_member)
+            {
+              counter = counter = countTreeLevel(ancestor2,0);
+              suffix = ancestor2->getSon()->getFather()->whatIsMySex();
+            }
+            
+            else if (ancestor1->getSon()->getMother()->getName() == family_member)
+            {
+                counter = countTreeLevel(ancestor1,0);
+                suffix = ancestor1->getSon()-> getMother() ->whatIsMySex();
+            }
+            else if (ancestor1->getSon()->getFather()->getName() == family_member)
+            {
+              counter = counter = countTreeLevel(ancestor1,0);
+              suffix = ancestor1->getSon()->getFather()->whatIsMySex();
+            }
+            else if (ancestor3->getSon()->getFather()->getName() == family_member)
+            {
+              counter = counter = countTreeLevel(ancestor3,0);
+              suffix = ancestor3->getSon()->getFather()->whatIsMySex();
+            }
+            else if (ancestor3->getSon()->getMother()->getName() == family_member)
+            {
+                counter = countTreeLevel(ancestor3,0);
+                suffix = ancestor3->getSon()-> getMother() ->whatIsMySex();
+            }
+            else
+            {
+                return "unrelated";
+            }
+            
+            cout << "counter = " << counter << endl;
+            const string& sex = suffix ? "mother" : "father" ;
     if ( counter == 1 )
     { 
         return sex;
@@ -124,7 +310,6 @@ const string Tree::relation(const string& family_member)
         int i = 0;
         for (; i < diff; i++)
         {
-            //cout << "i = " << i << endl;
             ans.append(great);
         }
             ans.append(grand);
@@ -138,20 +323,24 @@ return " i got here somehow ";
 
 int Tree::countTreeLevel(node* countFromHere,int counter)
 {
-    //cout << " Goes with this line is the lever counter " << counter << endl;
     if ( countFromHere -> getSon() != NULL )
     {
         counter++;
         return countTreeLevel ( countFromHere -> getSon() , counter );
-    }
-    
+    }   
     return counter;
 }
 
 const string Tree::find(const string &relationship)
 {
-    
-    
+    if (relationship == "mother" && _root -> getMother() == NULL )
+        {
+            throw invalid_argument("Mother have not been stated yet for  " + _root->getName());
+        }
+    if (relationship == "father" && _root -> getFather() == NULL )
+        {
+            throw invalid_argument("Father have not been stated yet for  " + _root->getName());
+        }
     if (  (int( relationship.find("mother") ) == -1 && int( relationship.find("father") ) == -1 ) )
     {
         throw invalid_argument("The tree cannot handle the '"+relationship+"' relation");
@@ -169,18 +358,22 @@ const string Tree::find(const string &relationship)
             {
                return find2GensOfRoot(relationship);
             }       
-        else
-            {
-            const int wanted_level = countFreq("great-", relationship) + 2; // the number of "great-" in the string + 2
-            bool sexOfCandidate = int( relationship.find("mother") ) != -1 ? true : false ;
-            //const string& cand_name = candidate(sexOfCandidate,wanted_level,_root);
-            return   (candidate(sexOfCandidate,wanted_level,_root));
-            }
         }catch
         (const exception& e) {
         cout << e.what()  << endl;
     }
-    
+            if (  int(relationship.find("great-")) == -1)
+            {
+                throw invalid_argument("no such thing");
+            }
+         try{
+            const int wanted_level = countFreq("great-", relationship) + 2; // the number of "great-" in the string + 2
+            bool sexOfCandidate = int( relationship.find("mother") ) != -1 ? true : false ;
+            return   (candidate(sexOfCandidate,wanted_level,_root));
+            }catch(const exception& e){
+                cout << e.what() << endl;
+            }
+
     return relationship;
 }
 
@@ -198,8 +391,16 @@ const string& Tree::find2GensOfRoot(const string &relation)
                 }
                 else
                 {
-                    return string(_root -> getName()).append(" has no grandmother yet");
-                }   
+                    throw string("No match for "+relation);
+                }
+                try
+                {
+                    
+                }
+                catch(const std::exception& e)
+                {
+                    cout << e.what() << '\n';
+                }
             }
             else if (  int(relation.find("father")) != -1 )
             {
@@ -213,14 +414,25 @@ const string& Tree::find2GensOfRoot(const string &relation)
                 }
                 else
                 {
-                    return string(_root -> getName()).append("has no grandfather yet");
+                    throw string("No match for "+relation);
                 }
+                try
+                {
+                    
+                }
+                catch(const std::exception& e)
+                {
+                    cout << e.what() << '\n';
+                }
+                
 }
             return relation;
 }
 
 void Tree::remove(const string& family_memeber_toRemove){
+    /*
     node* temp = search(family_memeber_toRemove,_root);
+    if (temp != NULL  ){ cout << " looking for Ruti " << temp->getName() << endl; }
     if (family_memeber_toRemove == _root ->getName())
     {
         throw invalid_argument("deleting root is forbidden");
@@ -235,60 +447,158 @@ void Tree::remove(const string& family_memeber_toRemove){
     
     if (temp -> getSon() != NULL && family_memeber_toRemove == temp->getName() )
     {
-        //cout <<  " this child will not longer recognize father " << temp ->getSon() -> getName() << endl;
         remove_node( temp );
         temp -> getSon() -> _father =NULL;
     }
     else if (temp -> getSon() -> getMother() -> getName() == temp -> getName())
     {
-        //cout <<  " this child will not longer recognize mother " << temp ->getSon() -> getName() << endl;
         remove_node(temp) ;
         temp -> getSon() -> _mother =NULL;
     }
     } catch (const exception& e){
         cout << e.what() << endl;
     }
+    */
+    safe_remove(family_memeber_toRemove,_root);
+}
+void Tree::safe_remove(const string& family_memeber_toRemove,node* relative)
+{
+    node* temp = search(family_memeber_toRemove,relative);
+    //if (temp != NULL  ){  temp->nodeId(); }
+    if (family_memeber_toRemove == _root ->getName())
+    {
+        throw invalid_argument("deleting root is forbidden");
+    }
+    if (temp == NULL)
+    {
+        throw invalid_argument("either removed already or wasn't there on the first place");
+    }
+    try{
+    if (temp -> getFather() != NULL) { safe_remove(temp -> getFather() -> getName(),temp->getFather()); }
+    if (temp -> getMother() != NULL) { safe_remove(temp -> getMother() -> getName(),temp->getMother() ); }
+    
+    if (temp -> getSon() != NULL && family_memeber_toRemove == temp->getName() && !temp->whatIsMySex() )
+    {
+     //   cout << "father                                       " <<temp->getName() << endl;
+        remove_node( temp );
+        temp -> getSon() -> _father =NULL;
+    }
+    else if (temp -> getSon() -> getMother() -> getName() == temp -> getName() && temp->whatIsMySex())
+    {
+     //   cout << "mother                                       " <<temp->getName() << endl;
+        remove_node(temp) ;
+        temp -> getSon() -> _mother =NULL;
+    }
+    //else
+    //{
+    //    cout << "did not realize which sex                                       " <<temp->getName() << endl;
+    //}
+    
+    } catch (const exception& e){
+        cout << e.what() << endl;
+    }
+        temp = find_node(family_memeber_toRemove);
+     if (temp != NULL && temp->getName() != family_memeber_toRemove ){
+         cout << temp -> getName() << endl;
+          throw invalid_argument("either removed already or wasn't there on the first place"); 
+          }
+     try
+     {
+         
+     }
+     catch(const std::exception& e)
+     {
+         cout << family_memeber_toRemove << e.what() << '\n';
+     }
+     
 }
 
 void Tree::display()
 {
-    //cout << "enteres display" << endl;
     print_node(_root);
     cout << endl;
-    //cout << "ended display" << endl;
 }
 
-node* Tree::find_node(const string& relation)
+node* Tree::find_node(const string& family_member)
 {
-    return this->_root;
+        node* ancestor; node* ancestor1; node* ancestor2; node* ancestor3;
+        if ( getRootByNode()->getMother() != NULL ) node* ancestor = binSearch(family_member, getRootByNode() ->getMother());
+        if ( getRootByNode()->getMother() != NULL ) node* ancestor1 = search(family_member, getRootByNode() -> getMother() ) ;
+        if ( getRootByNode()->getMother() != NULL ) node* ancestor2 = binSearch(family_member, getRootByNode() ->getFather() );
+        if ( getRootByNode()->getMother() != NULL ) node* ancestor3 = search(family_member, getRootByNode() -> getFather() );
+        else
+        {
+            cout << "im getting tired from you both.  Search =  moter = " <<ancestor1->getName()     <<   ",         search     =    father    "  << ancestor3->getName()   << endl;
+            cout << "im getting tired from you both.  binSearch =  mother = " <<ancestor->getName()     <<   ",         binSearch     =    father    "  << ancestor2->getName()   << endl;
+            int counter;
+            bool suffix = true;
+            if (ancestor->getSon()->getMother()->getName() == family_member )
+            {
+              counter = counter = countTreeLevel(ancestor,0);
+              return ancestor->getSon()-> getMother();
+            }
+            else if (ancestor->getSon()->getFather()->getName() == family_member)
+            {
+              counter = counter = countTreeLevel(ancestor,0);
+              return ancestor->getSon()->getFather();
+            }
+            else if (ancestor2->getSon()->getMother()->getName() == family_member)
+            {
+               counter = countTreeLevel(ancestor2,0);
+               return ancestor2->getSon()-> getMother();
+            }
+            else if (ancestor2->getSon()->getFather()->getName() == family_member)
+            {
+              counter = counter = countTreeLevel(ancestor2,0);
+              return ancestor2->getSon()->getFather();
+            }
+            
+            else if (ancestor1->getSon()->getMother()->getName() == family_member)
+            {
+                counter = countTreeLevel(ancestor1,0);
+                return ancestor1->getSon()->getMother();
+            }
+            else if (ancestor1->getSon()->getFather()->getName() == family_member)
+            {
+              counter = counter = countTreeLevel(ancestor1,0);
+              return ancestor1->getSon()->getFather();
+            }
+            else if (ancestor3->getSon()->getFather()->getName() == family_member)
+            {
+              counter = counter = countTreeLevel(ancestor3,0);
+              return ancestor3->getSon();
+            }
+            else if (ancestor3->getSon()->getMother()->getName() == family_member)
+            {
+                counter = countTreeLevel(ancestor3,0);
+                return ancestor3->getSon()-> getMother();
+            }
+}
+            return NULL;
 }
 
 void Tree::print_node(node* current)
 {
-    //cout << "inside print_node, currently pointing at " << current -> getName() << endl;
     //current -> nodeId();
     if (current == NULL)
     {
         return;
     } 
-    //cout <<  "name =" << current -> getName()  <<", level =" <<current->getLevel() << endl;
     if (current -> getFather() != NULL ){
-      //  cout << "father = " << "print_node(" << current-> getFather()->getName()<<")   "<<endl;
         print_node(current-> getFather() );
     }
     
     if (current -> getMother() != NULL ) {
-      //  cout << "print_node(" << current-> getMother()->getName()<<endl;
         print_node( current -> getMother () );                                    
-}
-cout << current->_name <<endl;
+    }
+    cout << current->getName() <<endl;
 return;
 }
 
 void node::nodeId(){
-    cout << " my name is : " <<  this -> getName() << endl;
-    if (this -> _father) cout << " my father is : " <<  this -> _father -> getName() << endl;
-    if (this -> _mother) cout << " my mother is : " <<  this -> _mother -> getName() << endl;
+    cout << "                                        my name is : " <<  this -> getName() << endl;
+    if (this-> getFather()!=NULL) cout << "                     MY FATHER my father is : " <<  this -> _father -> getName() << endl;
+    if (getMother() != NULL) cout << "                            my mother is : " <<  this -> _mother -> getName() << endl;
     return;
 
 }
@@ -320,17 +630,10 @@ node* node::addFather(const string &father_name){
 const string Tree::candidate(bool sex,const int& wanted_level,node* cand)
 {   
     
+    /*
     cout << "wanted_level = " << wanted_level << endl;
     cout << "in candidate, checking " << cand -> getName() << endl;
-    /*
-    if (0 == wanted_level && sex == cand -> whatIsMySex())
-    {
-        return const_cast<string&> (cand->getName());
-    }
-    if (cand -> getLevel() == wanted_level && sex != cand -> whatIsMySex())
-    {
-        throw string("unable to find match");
-    }
+    
     */
    if (wanted_level == 0)
    {
@@ -387,7 +690,7 @@ bool node::goingSomeWhere(const int& level,node* current)
     {
         return false;
     }
-    cout << current->getName() << ", level= " << current->getLevel() << endl;
+    //cout << current->getName() << ", level= " << current->getLevel() << endl;
     if (current->getLevel() == level)
     {
        return true;
@@ -437,19 +740,36 @@ void node::deleteMother(){
 
 
  node* Tree::search(const std::string& decendant,node* current){
-     
+     //cout << "in search of  : " << decendant << ",  where current node is : " << current->getName() <<endl;
      if (decendant == current -> getName())   // found you!
      {
+         cout << decendant <<"  binSearch  returns " << current->getName() << endl;
          return current;
      }
-     else if (current -> getFather() == NULL && current -> getMother() == NULL)
+     /*
+     if (current -> getMother() != NULL ) {return search(decendant,current->getMother()) ; }
+     if (current -> getMother() != NULL ) {return search(decendant,current->getMother()) ; }
+     else {return NULL;}
+    */
+    
+     if (current -> getFather() != NULL)
+     {
+         return search(decendant,current->getFather());
+     }
+     if (current -> getMother() != NULL)
+     {
+         return search(decendant,current->getMother());
+     }
+      if (current -> getFather() == NULL && current -> getMother() == NULL)
      /*
         poor baby has no parents, and since it's not him in the fist place there is no where to procced
         find a fat lady and tell her to sing , 'cause it's all over ! 
      */
      {
-         return NULL;
+         cout << "answered positive to have no parents at the moment " << current->getName() << endl;
+         return current;
      }
+     /*
      else if( current -> getFather() != NULL && current -> getMother() == NULL) // only has a father
      {
          if (current -> getFather() -> getName() == decendant) // if the answer is your father
@@ -461,6 +781,8 @@ void node::deleteMother(){
              return search(decendant,current -> getFather());
          } 
      }
+     */
+    /*
      else if (current -> getFather() == NULL && current -> getMother() != NULL) // similarly , has only mother.
      {
          if (current -> getMother() -> getName() == decendant)
@@ -472,8 +794,13 @@ void node::deleteMother(){
              return search(decendant,current -> getMother());
          }
      }
+     */
+    
+         /*
      else if (current -> getFather() != NULL && current -> getMother() != NULL) // has both parents
      {
+
+
          if (current -> getMother() -> getName() == decendant) // if answer is currnet node's mother
          {
              return current-> getMother();
@@ -499,10 +826,11 @@ void node::deleteMother(){
                  return NULL; // it's neither of them.
              }
          }
-     }
+         */
      return NULL;
- }
-
+     }
+ 
+ 
  int Tree::countFreq(const string &pat,const string &txt) 
 { 
     int M = pat.length(); 
@@ -527,4 +855,11 @@ void node::deleteMother(){
         } 
     } 
     return res; 
-} 
+}
+
+const std::string& Tree::getRoot(){
+    return this->_root->getName();
+}
+node* Tree::getRootByNode(){
+    return _root;
+}
